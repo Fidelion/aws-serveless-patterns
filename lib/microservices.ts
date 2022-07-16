@@ -61,6 +61,9 @@ export class KrakenMicroservices extends Construct {
 			environment: {
 				PRIMARY_KEY: "id",
 				DYNAMODB_TABLE_NAME: basketTable.tableName,
+				EVENT_SOURCE: "com.kraken.checkoutbasket",
+				EVENT_DETAIL_TYPE: "CheckoutBasket",
+				EVENT_BUS_NAME: "KrakenEventBus",
 			},
 			runtime: Runtime.NODEJS_14_X,
 		};
