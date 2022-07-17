@@ -1,11 +1,11 @@
-import { Stack, StackProps } from "aws-cdk-lib";
-import { EventBus, Rule } from "aws-cdk-lib/aws-events";
-import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
+import { Duration, Stack, StackProps } from "aws-cdk-lib";
+import { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 import { KrakenDatabase } from "./database";
 import { KrakenEventBus } from "./eventbus";
 import { KrakenApiGateway } from "./gateway";
 import { KrakenMicroservices } from "./microservices";
+import { KrakenQueue } from "./queue";
 
 export class AwsMicroservicesStack extends Stack {
 	constructor(scope: Construct, id: string, props?: StackProps) {
@@ -25,9 +25,13 @@ export class AwsMicroservicesStack extends Stack {
 			orderMicroservice: microservices.orderMicroservice,
 		});
 
+		const queue = new KrakenQueue(this, "Queue", {
+			consumer: microservices.orderMicroservice,
+		});
+
 		const evetBus = new KrakenEventBus(this, "EventBridge", {
 			publisherFunction: microservices.basketMicroservice,
-			targetFunction: microservices.orderMicroservice,
+			targetQueue: queue.orderQueue,
 		});
 	}
 }

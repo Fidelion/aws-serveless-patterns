@@ -1,11 +1,12 @@
 import { EventBus, Rule } from "aws-cdk-lib/aws-events";
-import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
+import { SqsQueue } from "aws-cdk-lib/aws-events-targets";
 import { IFunction } from "aws-cdk-lib/aws-lambda";
+import { IQueue, Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 
 interface KrakenEventBusProps {
 	publisherFunction: IFunction;
-	targetFunction: IFunction;
+	targetQueue: IQueue;
 }
 
 export class KrakenEventBus extends Construct {
@@ -27,7 +28,7 @@ export class KrakenEventBus extends Construct {
 			ruleName: "CheckoutBasketRule",
 		});
 
-		checkoutBasketRule.addTarget(new LambdaFunction(props.targetFunction));
+		checkoutBasketRule.addTarget(new SqsQueue(props.targetQueue));
 
 		bus.grantPutEventsTo(props.publisherFunction);
 	}
